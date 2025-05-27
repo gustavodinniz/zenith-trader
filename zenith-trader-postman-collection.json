@@ -1,0 +1,299 @@
+{
+  "info": {
+    "name": "Zenith Trader API",
+    "description": "Collection for testing the Zenith Trader API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Stop Orders",
+      "description": "Endpoints for managing stop orders",
+      "item": [
+        {
+          "name": "Create Stop Order (STOP_LOSS)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": \"user123\",\n    \"stockSymbol\": \"AAPL\",\n    \"triggerPrice\": 150.00,\n    \"type\": \"STOP_LOSS\",\n    \"quantity\": 10\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders"]
+            },
+            "description": "Create a new stop loss order"
+          }
+        },
+        {
+          "name": "Create Stop Order (STOP_GAIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": \"user123\",\n    \"stockSymbol\": \"AAPL\",\n    \"triggerPrice\": 180.00,\n    \"type\": \"STOP_GAIN\",\n    \"quantity\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders"]
+            },
+            "description": "Create a new stop gain order"
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders/{{orderId}}/users/user123",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders", "{{orderId}}", "users", "user123"]
+            },
+            "description": "Get a specific order by ID for a user"
+          }
+        },
+        {
+          "name": "Get All Orders for User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders/users/user123",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders", "users", "user123"]
+            },
+            "description": "Get all orders for a specific user"
+          }
+        },
+        {
+          "name": "Get Active Orders for User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders/users/user123?status=ACTIVE",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders", "users", "user123"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "ACTIVE"
+                }
+              ]
+            },
+            "description": "Get active orders for a specific user"
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders/{{orderId}}/users/user123/cancel",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders", "{{orderId}}", "users", "user123", "cancel"]
+            },
+            "description": "Cancel a specific order"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "description": "Endpoints for receiving real-time notifications",
+      "item": [
+        {
+          "name": "Stream Notifications",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/v1/orders/users/user123/notifications",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "v1", "orders", "users", "user123", "notifications"]
+            },
+            "description": "Stream real-time notifications for a user (Server-Sent Events)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "description": "Common test scenarios for the application",
+      "item": [
+        {
+          "name": "Create Multiple Orders",
+          "item": [
+            {
+              "name": "Create STOP_LOSS for AAPL",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"userId\": \"user123\",\n    \"stockSymbol\": \"AAPL\",\n    \"triggerPrice\": 165.00,\n    \"type\": \"STOP_LOSS\",\n    \"quantity\": 10\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/orders",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8080",
+                  "path": ["api", "v1", "orders"]
+                }
+              }
+            },
+            {
+              "name": "Create STOP_GAIN for AAPL",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"userId\": \"user123\",\n    \"stockSymbol\": \"AAPL\",\n    \"triggerPrice\": 175.00,\n    \"type\": \"STOP_GAIN\",\n    \"quantity\": 5\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/orders",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8080",
+                  "path": ["api", "v1", "orders"]
+                }
+              }
+            },
+            {
+              "name": "Create STOP_LOSS for GOOGL",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"userId\": \"user123\",\n    \"stockSymbol\": \"GOOGL\",\n    \"triggerPrice\": 135.00,\n    \"type\": \"STOP_LOSS\",\n    \"quantity\": 3\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/orders",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8080",
+                  "path": ["api", "v1", "orders"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Invalid Requests",
+          "item": [
+            {
+              "name": "Create Order with Negative Price",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"userId\": \"user123\",\n    \"stockSymbol\": \"AAPL\",\n    \"triggerPrice\": -10.00,\n    \"type\": \"STOP_LOSS\",\n    \"quantity\": 10\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/orders",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8080",
+                  "path": ["api", "v1", "orders"]
+                },
+                "description": "Should return a 400 Bad Request"
+              }
+            },
+            {
+              "name": "Create Order with Zero Quantity",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"userId\": \"user123\",\n    \"stockSymbol\": \"AAPL\",\n    \"triggerPrice\": 150.00,\n    \"type\": \"STOP_LOSS\",\n    \"quantity\": 0\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/orders",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8080",
+                  "path": ["api", "v1", "orders"]
+                },
+                "description": "Should return a 400 Bad Request"
+              }
+            },
+            {
+              "name": "Get Non-existent Order",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/orders/non-existent-id/users/user123",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "8080",
+                  "path": ["api", "v1", "orders", "non-existent-id", "users", "user123"]
+                },
+                "description": "Should return a 404 Not Found"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "orderId",
+      "value": "replace-with-actual-order-id",
+      "type": "string"
+    }
+  ]
+}
