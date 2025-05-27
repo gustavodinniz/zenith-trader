@@ -31,7 +31,7 @@ public class StopOrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<ResponseEntity<StopOrder>> createStopOrder(@RequestBody CreateStopOrderRequest request) {
+    public Mono<StopOrder> createStopOrder(@RequestBody CreateStopOrderRequest request) {
 
         StopOrder order = StopOrder.builder()
                 .userId(request.userId())
@@ -42,17 +42,13 @@ public class StopOrderController {
                 .build();
 
         return orderManagementService.createOrder(order)
-                .map(savedOrder -> ResponseEntity.status(HttpStatus.CREATED).body(savedOrder))
-                .onErrorResume(IllegalArgumentException.class, e ->
-                        Mono.just(ResponseEntity.badRequest().<StopOrder>build()))
                 .doOnError(error -> log.error("API Error creating order: {}", error.getMessage()));
     }
 
     @GetMapping("/{orderId}/users/{userId}")
-    public Mono<ResponseEntity<StopOrder>> getOrderById(@PathVariable String orderId, @PathVariable String userId) {
+    public Mono<StopOrder> getOrderById(@PathVariable String orderId, @PathVariable String userId) {
         return orderManagementService.getOrderByIdAndUser(orderId, userId)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .switchIfEmpty(Mono.error(new OrderNotFoundException("Order not found with ID: " + orderId)));
     }
 
     @GetMapping("/users/{userId}")
@@ -63,13 +59,8 @@ public class StopOrderController {
     }
 
     @PatchMapping("/{orderId}/users/{userId}/cancel")
-    public Mono<ResponseEntity<StopOrder>> cancelOrder(@PathVariable String orderId, @PathVariable String userId) {
-        return orderManagementService.cancelOrder(orderId, userId)
-                .map(ResponseEntity::ok)
-                .onErrorResume(OrderNotFoundException.class, e ->
-                        Mono.just(ResponseEntity.notFound().build()))
-                .onErrorResume(OrderCannotBeCancelledException.class, e ->
-                        Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build()));
+    public Mono<StopOrder> cancelOrder(@PathVariable String orderId, @PathVariable String userId) {
+        return orderManagementService.cancelOrder(orderId, userId);
     }
 
     @GetMapping(value = "/users/{userId}/notifications", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -91,4 +82,3 @@ public class StopOrderController {
                 .doFinally(signalType -> log.info("SSE stream finalized for user {}: {}", userId, signalType));
     }
 }
-
