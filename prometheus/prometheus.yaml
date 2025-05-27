@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'zenith-trader-app'
+    metrics_path: '/actuator/prometheus' # Caminho do endpoint de métricas da sua aplicação
+    static_configs:
+      - targets: ['zenith-trader-app-container:8080']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

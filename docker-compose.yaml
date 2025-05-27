@@ -1,0 +1,94 @@
+services:
+  zenith-trader-app:
+    build:
+      context: .
+    container_name: zenith-trader-app-container
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongo
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_USERNAME: zenith-trader-user
+      SPRING_DATA_MONGODB_PASSWORD: zenith-trader-password
+      SPRING_DATA_MONGODB_DATABASE: zenith-trader-db
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: zenith-trader-redis-password
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - zenith-trader-network
+
+  mongo:
+    image: mongo:7.0
+    container_name: zenith-trader-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: zenith-trader-user
+      MONGO_INITDB_ROOT_PASSWORD: zenith-trader-password
+      MONGO_INITDB_DATABASE: zenith-trader-db
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - zenith-trader-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: zenith-trader-redis
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--requirepass", "zenith-trader-redis-password" ]
+    volumes:
+      - redis_data:/data
+    networks:
+      - zenith-trader-network
+
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: zenith-trader-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - zenith-trader-app
+    networks:
+      - zenith-trader-network
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: zenith-trader-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - zenith-trader-network
+
+networks:
+  zenith-trader-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

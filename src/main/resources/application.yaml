@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: zenith-trader
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: zenith-trader-user
+      password: zenith-trader-password
+      database: zenith-trader-db
+      authentication-database: admin
+    redis:
+      host: localhost
+      port: 6379
+      password: zenith-trader-redis-password
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics,env,beans,configprops,loggers
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: unrestricted
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    root: INFO
+    github.gustavodinniz: DEBUG
+    org.springframework.web: INFO
+    org.springframework.data.mongodb: INFO
+    org.springframework.data.redis: INFO
+    reactor.netty.http.client: INFO
+    io.lettuce.core: INFO
+
+zenith-trader:
+  volatility:
+    default-threshold-percentage: 5.0
+    default-time-window-minutes: 15
+  ticker:
+    symbols-to-monitor: "PETR4.SA,VALE3.SA,ITUB4.SA,AAPL,GOOGL"
+    price-simulator:
+      enabled: true
+      interval-ms: 1000
+      base-prices:
+        PETR4.SA: 35.50
+        VALE3.SA: 62.10
+        ITUB4.SA: 32.80
+        AAPL: 170.00
+        GOOGL: 140.00
+      price-variation-percentage: 0.5
